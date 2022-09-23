@@ -100,8 +100,9 @@ irc.client.on('data', msg => {
                 case 'users':
                     let users = "";
                     Object.values(cl.ppl).forEach(p => {
-                        users += `[${p._id.substring(0, 6)}] ${p.name}`;
-                    })
+                        users += `[${p._id.substring(0, 6)}] ${p.name} | `;
+                    });
+                    users = users.substring(0, users.trim().length).trim();
                     ircChat(`Users: ${users}`);
                     break;
             }
