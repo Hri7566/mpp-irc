@@ -1,5 +1,9 @@
 require('dotenv').config();
 
+Object.prototype.toString = function() {
+    return JSON.stringify(this, undefined, 1).split('\n').join('');
+}
+
 const Client = require('mppclone-client');
 const ircClient = require('node-irc');
 
@@ -110,6 +114,19 @@ irc.client.on('data', msg => {
                         m: 'a',
                         message: msg.argcat
                     }]);
+                    break;
+                case 'who':
+                    let p = Object.values(cl.ppl).find(p => p.name.toLowerCase().includes(msg.argcat.toLowerCase()) || p._id.toLowerCase().includes(msg.argcat.toLowerCase()) || p.id.toLowerCase().includes(msg.argcat.toLowerCase()));
+                    if (p) {
+                        let vals = "";
+                        for (let k of Object.keys(p)) {
+                            vals += `${k}: ${p[k]} | `;
+                        }
+                        vals = vals.substring(0, vals.trim().length - 2).trim();
+                        ircChat(`Info for [${p._id.substring(0, 6)}] ${p.name}: ${vals}`);
+                    } else {
+                        ircChat('User not found.');
+                    }
                     break;
             }
         } else {
