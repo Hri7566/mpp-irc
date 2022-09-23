@@ -115,15 +115,27 @@ irc.client.on('data', msg => {
 cl.on('a', msg => {
     if (irc.client.closed) return;
     if (msg.p._id == cl.getOwnParticipant()._id && msg.a.startsWith('\u034f[IRC]')) return;
-    ircChat(`[${msg.p._id.substring(0, 6)}] ${msg.p.name}: ${msg.a}`);
+    let tagText = "";
+    if (msg.p.tag) {
+        tagText = msg.p.tag.text;
+    }
+    ircChat(`[${msg.p._id.substring(0, 6)}] [${tagText}] ${msg.p.name}: ${msg.a}`);
 });
 
 cl.on('participant added', p => {
     if (irc.client.closed) return;
-    ircChat(`[${p._id.substring(0, 6)}] ${p.name} joined the channel`);
+    let tagText = "";
+    if (p.tag) {
+        tagText = p.tag.text;
+    }
+    ircChat(`[${p._id.substring(0, 6)}] [${tagText}] ${p.name} joined the channel`);
 });
 
 cl.on('participant removed', p => {
     if (irc.client.closed) return;
-    ircChat(`[${p._id.substring(0, 6)}] ${p.name} left the channel`);
+    let tagText = "";
+    if (p.tag) {
+        tagText = p.tag.text;
+    }
+    ircChat(`[${p._id.substring(0, 6)}] [${tagText}] ${p.name} left the channel`);
 });
