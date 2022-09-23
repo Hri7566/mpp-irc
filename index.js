@@ -4,15 +4,15 @@ const Client = require('mppclone-client');
 const ircClient = require('node-irc');
 
 const nick = 'mppclone';
-const channel = '#dev-room'
+const channel = '#mpp'
 
 let cl = new Client('wss://mppclone.com:8443', process.env.MPPCLONE_TOKEN);
 let irc = new ircClient('raspberrypi', 6697, nick, nick);
-
 let prefix = '!';
+let mpp_channel = '✧𝓓𝓔𝓥 𝓡𝓸𝓸𝓶✧';
 
 cl.start();
-cl.setChannel('✧𝓓𝓔𝓥 𝓡𝓸𝓸𝓶✧')
+cl.setChannel(mpp_channel);
 
 cl.on('hi', msg => {
     console.log('Connected to MPP');
@@ -46,7 +46,7 @@ setInterval(() => {
 }, 5000);
 
 cl.on('t', msg => {
-    ping = msg.t - msg.e;
+    ping = msg.t - msg.e - 0xa455;
 });
 
 irc.client.on('data', msg => {
@@ -88,7 +88,7 @@ irc.client.on('data', msg => {
             }
 
             msg.args = msg.a.split(' ');
-            msg.argcat = msg.a.substring(msg.args[0].length);
+            msg.argcat = msg.a.substring(msg.args[0].length).trim();
 
             msg.cmd = msg.args[0].split(prefix).join('');
 
@@ -105,6 +105,12 @@ irc.client.on('data', msg => {
                     users = users.substring(0, users.trim().length).trim();
                     ircChat(`Users: ${users}`);
                     break;
+                case 'raw':
+                    cl.sendArray([{
+                        m: 'a',
+                        message: msg.argcat
+                    }]);
+                    break;
             }
         } else {
             sendChat(`[IRC] ${n}: ${str}`);
@@ -119,7 +125,7 @@ cl.on('a', msg => {
     if (msg.p.tag) {
         tagText = msg.p.tag.text;
     }
-    ircChat(`[${msg.p._id.substring(0, 6)}] [${tagText}] ${msg.p.name}: ${msg.a}`);
+    ircChat(`[${msg.p._id.substring(0, 6)}] ${tagText == "" ? '' : `[${tagText}]`} ${msg.p.name}: ${msg.a}`);
 });
 
 cl.on('participant added', p => {
@@ -128,7 +134,7 @@ cl.on('participant added', p => {
     if (p.tag) {
         tagText = p.tag.text;
     }
-    ircChat(`[${p._id.substring(0, 6)}] [${tagText}] ${p.name} joined the channel`);
+    ircChat(`[${p._id.substring(0, 6)}] ${tagText == "" ? '' : `[${tagText}]`} ${p.name} joined the channel`);
 });
 
 cl.on('participant removed', p => {
@@ -137,5 +143,5 @@ cl.on('participant removed', p => {
     if (p.tag) {
         tagText = p.tag.text;
     }
-    ircChat(`[${p._id.substring(0, 6)}] [${tagText}] ${p.name} left the channel`);
+    ircChat(`[${p._id.substring(0, 6)}] ${tagText == "" ? '' : `[${tagText}]`} ${p.name} left the channel`);
 });
