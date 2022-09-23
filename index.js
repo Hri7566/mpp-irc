@@ -96,6 +96,14 @@ irc.client.on('data', msg => {
                 case 'ping':
                     ircChat(`Ping: ${ping}`);
                     break;
+                case 'ppl':
+                case 'users':
+                    let users = "";
+                    Object.values(cl.ppl).forEach(p => {
+                        users += `[${p._id.substring(0, 6)}] ${p.name}`;
+                    })
+                    ircChat(`Users: ${users}`);
+                    break;
             }
         } else {
             sendChat(`[IRC] ${n}: ${str}`);
