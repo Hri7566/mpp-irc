@@ -128,6 +128,15 @@ irc.client.on('data', msg => {
                         ircChat('User not found.');
                     }
                     break;
+				case 'rejoin':
+					if (cl.isConnected()) {
+						ircChat(`Attempting to rejoin MPP channel '${cl.desiredChannelId}'...`);
+						cl.stop();
+					} else {
+						ircChat(`Not currently connected, rejoining MPP channel '${cl.desiredChannelId}'...`);
+					}
+					cl.start();
+					break;
             }
         } else {
             sendChat(`[IRC] ${n}: ${str}`);
